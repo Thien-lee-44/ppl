@@ -1,3 +1,5 @@
+//Student id: 2313233
+ 
 grammar MiniGo;
 
 @lexer::header {
@@ -42,12 +44,12 @@ many_decl: decl SM many_decl|decl|decl SM;
 decl:constdecl | vardecl | structdecl | interdecl|methoddecl |funcdecl;
 
 constdecl: CONST ID EQ expr;
-
-vardecl: VAR ID def_var;
-def_var:type_var|init|type_var init;
+vardecl: var_init|var_not_init;
+var_init: VAR ID type_option init;
+var_not_init: VAR ID type_var;
 type_option:type_var|;
 type_var: arraytype| TYPE|ID ;
-arraytype: LS INT RS arraytype| TYPE;
+arraytype: LS INT RS arraytype| TYPE| ID;
 init: EQ expr;
 structdecl: Type ID STRUCT structbody;
 structbody:LB structcontent RB;
@@ -77,7 +79,7 @@ else_tail:ELSE block_stmt|;
 for_stmt: for_basic|for_range|for_init;
 for_basic:FOR expr block_stmt;
 for_init: FOR initial SM expr SM asign block_stmt;
-initial: asign|vardecl;
+initial: asign|var_init;
 for_range: FOR ID CM ID ASSIGNEQ RANGE ID block_stmt;
 block_stmt: LB list_stmt RB;
 break_stmt: BREAK;
@@ -89,14 +91,16 @@ list_expr:expr tail_expr|;
 tail_expr: CM expr tail_expr|;
 expr: expr OR expr1|expr1;
 expr1: expr1 AND expr2| expr2;
-expr2: expr2 COMP expr3|expr3;
+expr2: expr2 comp expr3|expr3;
+comp: COMPEQ| COMPNE|COMPLT|COMPLE|COMPGT|COMPGE;
 expr3: expr3 ADD expr4|expr3 SUB expr4|expr4;
 expr4: expr4 MUL expr5|expr4 DIV expr5|expr4 MOD expr5|expr5;
 expr5: NEG expr5| SUB expr5| expr6;
 expr6:liter |LP expr RP| lhs |call_stmt;
-liter: INT|FLOAT|STRING|BOOL|NIL|arrlit|structlit;
+liter: INT|FLOAT|STRING|BOOL|NIL|structlit|arrlit;
 arrlit: arraytype LB arrbody RB;
-arrbody: LB arrbody RB | arrbody CM liter|liter;
+arrbody: arrbody CM arr_member|arr_member;
+arr_member:INT|FLOAT|STRING|BOOL|NIL|structlit|LB arrbody RB;
 structlit: ID LB structlit_body RB;
 structlit_body: structlit_ele structlit_tail |;
 structlit_tail: CM structlit_ele structlit_tail|;
@@ -127,7 +131,12 @@ SUB: '-' ;
 MUL: '*' ;
 DIV: '/';
 MOD: '%';
-COMP: '==' | '!=' | '<' | '<=' | '>' | '>=';
+COMPEQ: '==' ;
+COMPNE: '!=' ;
+COMPLT: '<' ;
+COMPLE: '<=' ;
+COMPGT: '>' ;
+COMPGE: '>=';
 AND: '&&';
 OR: '||';
 NEG: '!';
@@ -156,7 +165,7 @@ fragment HEX: ('0X'|'0X') [1-9a-fA-F] [0-9a-fA-F]*;
 INT:DEC|BIN|OCT|HEX;
 
 FLOAT: [0-9]+ '.' [0-9]* (('e'|'E') ('+'|'-')? [0-9]+)?;
-STRING: '"' (~["\\]|ESC)* '"';
+STRING: '"' (~["\\\r\n]|ESC)* '"';
 fragment ESC: '\\' [tnr"\\];
 
 NL: '\n' ; //skip newlines
