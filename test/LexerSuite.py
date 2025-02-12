@@ -40,4 +40,12 @@ class LexerSuite(unittest.TestCase):
         self.assertTrue(TestLexer.checkLexeme(""" /*sc*//*s*//*vas*/ ""","""<EOF>""",115))
     def test_newline(self):
          self.assertTrue(TestLexer.checkLexeme("""abc;\ndef""","""abc,;,def,<EOF>""",116))
-  
+    def test_func_1(self):
+         self.assertTrue(TestLexer.checkLexeme("""func main(){
+arr := 1
+for index, value := range arr {
+// index: 0, 1, 2
+// value: 10, 20, 30
+
+}
+}""","""abc,;,def,<EOF>""",117))

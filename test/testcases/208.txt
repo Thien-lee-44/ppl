@@ -1,0 +1,10 @@
+var i = 2;
+const a = 9+2*7
+func main(){
+    var a int;
+    var b float;
+    return a+b;
+}
+func foo(a,b,c int, d float) [5][3]float{
+    return foo(a,b,c,d)
+}
